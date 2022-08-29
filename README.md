@@ -1,5 +1,14 @@
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
+## To be done
+How to expire a nft automatically?
+
+A seller would upload a nft warranty.
+A company will get registered by paying an amount of ethereum. Once it is registerd we will give that company the right to five access to their outlets and stores.
+If a retailer wants to buy in bulk the warranty will get issued on retailers blockchain account.
+Once a costumor purchases a product the retailer need to transfer the nft to costomers ethereum account.
+We can make a section which get all warranties where we will list all the warranties.
+
 ## Getting Started
 
 First, run the development server:
