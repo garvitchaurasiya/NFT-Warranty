@@ -3,11 +3,14 @@ This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next
 ## To be done
 How to expire a nft automatically?
 
-A seller would upload a nft warranty.
-A company will get registered by paying an amount of ethereum. Once it is registerd we will give that company the right to five access to their outlets and stores.
-If a retailer wants to buy in bulk the warranty will get issued on retailers blockchain account.
-Once a costumor purchases a product the retailer need to transfer the nft to costomers ethereum account.
-We can make a section which get all warranties where we will list all the warranties.
+{
+    When a customer purchases a product the retailer will upload the metadata to IPFS using pinata api's.
+    SafeMint a NFT and pass the tokenURI to the safemint function.
+    Metadata includes owner's account address, warranty period or warranty expiry.
+
+    If someone wants to resell the product then he must get all the data from metadata and create new metadata with a different owner then mint a new NFT with different tokenURI. And delete the old metadata.
+}
+
 
 ## Getting Started
 
