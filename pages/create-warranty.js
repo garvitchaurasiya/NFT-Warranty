@@ -2,8 +2,10 @@ import React, { useState } from 'react';
 import { Button, Checkbox, Form } from 'semantic-ui-react'
 const axios = require('axios');
 import Router from 'next/router';
+import warranty from '../ethereum/warranty';
+import web3 from '../ethereum/web3';
 
-export default function ProductDetails() {
+export default function CreateWarranty() {
   let currentdate = new Date().toISOString().slice(0, 10);
 
   const [state, setState] = useState({
@@ -11,19 +13,24 @@ export default function ProductDetails() {
     expiryDate: currentdate,
     serialNumber: "",
     modal: "",
-
+    accountAddress: ""
   });
 
-  const uploadMetadataOnChange = (e) => {
+  const onChange = (e) => {
     setState({ ...state, [e.target.name]: e.target.value })
     console.log(state);
   }
 
-  const uploadMetadata = async () => {
 
-
+  const mintNFT = async (metadataURI) => {
+    const accounts = await web3.eth.getAccounts();
+    await warranty.methods.safeMint(state.accountAddress, metadataURI).send({
+      from: accounts[0]
+    })
+  }
+  const createWarranty = async (event) => {
+    event.preventDefault();
     try {
-
       var data = JSON.stringify({
         "pinataOptions": {
           "cidVersion": 1
@@ -60,33 +67,38 @@ export default function ProductDetails() {
       // console.log(res.data);
 
       // Router.push(`/mintnft/${res.data.IpfsHash}`)
-      Router.push(`/mintnft/res.data.bafkreieif3uo2h4uhjpkhs45fr2qcbukwbmwqxe4jzqj7s2qnwtudbbd64`)
-
+      // Router.push(`/mintnft/bafkreieif3uo2h4uhjpkhs45fr2qcbukwbmwqxe4jzqj7s2qnwtudbbd64`)
+      // const metadataURI = res.data.IpfsHash;
+      const metadataURI = 'bafkreieif3uo2h4uhjpkhs45fr2qcbukwbmwqxe4jzqj7s2qnwtudbbd64';
+      mintNFT(metadataURI);
     } catch (error) {
       console.log(error.message);
     }
   }
 
+
   return (
     <div className="container">
-
-
-      <Form onSubmit={uploadMetadata}>
+      <Form onSubmit={createWarranty}>
         <Form.Field>
           <Form.Field>
+            <label>Customer Account Address</label>
+            <input type="text" name="accountAddress" value={state.accountAddress} onChange={onChange} required placeholder='Address' />
+          </Form.Field>
+          <Form.Field>
             <label>Modal</label>
-            <input type="text" name="modal" value={state.modal} onChange={uploadMetadataOnChange} required />
+            <input type="text" name="modal" value={state.modal} onChange={onChange} required />
           </Form.Field>
           <Form.Field>
             <label>Serial Number</label>
-            <input type="text" name="serialNumber" value={state.serialNumber} onChange={uploadMetadataOnChange} required />
+            <input type="text" name="serialNumber" value={state.serialNumber} onChange={onChange} required />
           </Form.Field>
           <label>Purchased Date</label>
-          <input type="date" name="purchasedDate" value={state.purchasedDate} disabled onChange={uploadMetadataOnChange} />
+          <input type="date" name="purchasedDate" value={state.purchasedDate} disabled onChange={onChange} />
         </Form.Field>
         <Form.Field>
           <label>Expiry Date</label>
-          <input type="date" name="expiryDate" value={state.expiryDate} onChange={uploadMetadataOnChange} />
+          <input type="date" name="expiryDate" value={state.expiryDate} onChange={onChange} />
         </Form.Field>
 
         <Form.Field>
