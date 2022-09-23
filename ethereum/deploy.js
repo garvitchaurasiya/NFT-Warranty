@@ -3,8 +3,8 @@ const Web3 = require('web3');
 const compiledWarranty = require('./build/Warranty.json');
 
 const provider = new HDWalletProvider(
-    process.env.MNEMONIC, // This is our Account Mneumonic. Account Mneumonic allows us to derive both public and private key. So with mneumonic alone we can get the total access to our account through this HD wallet provider.
-    process.env.INFURA_API // This is the url of what network we want to connect to.
+    "session carbon task this muscle right reveal fork oak nephew blouse sick", // This is our Account Mneumonic. Account Mneumonic allows us to derive both public and private key. So with mneumonic alone we can get the total access to our account through this HD wallet provider.
+    "https://rinkeby.infura.io/v3/212a17f42b494d30b3cb8b53e8e5761c" // This is the url of what network we want to connect to.
 );
 
 const web3 = new Web3(provider);
