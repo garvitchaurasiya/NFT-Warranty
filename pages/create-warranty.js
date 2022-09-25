@@ -24,9 +24,11 @@ export default function CreateWarranty() {
 
   const mintNFT = async (metadataURI) => {
     const accounts = await web3.eth.getAccounts();
-    await warranty.methods.safeMint(state.accountAddress, metadataURI).send({
+    const mint = await warranty.methods.safeMint(state.accountAddress, metadataURI).send({
       from: accounts[0]
     })
+    console.log("Success");
+    console.log(mint.events.Transfer.returnValues.tokenId);
   }
   const createWarranty = async (event) => {
     event.preventDefault();
@@ -47,6 +49,7 @@ export default function CreateWarranty() {
           "serialNumber": state.serialNumber,
           "purchasedDate": state.purchasedDate,
           "warrantyExpiryDate": state.expiryDate,
+          "owner": state.accountAddress
         }
       });
       console.log(data);
@@ -65,9 +68,7 @@ export default function CreateWarranty() {
 
       // const res = await axios(config);
       // console.log(res.data);
-
-      // Router.push(`/mintnft/${res.data.IpfsHash}`)
-      // Router.push(`/mintnft/bafkreieif3uo2h4uhjpkhs45fr2qcbukwbmwqxe4jzqj7s2qnwtudbbd64`)
+      
       // const metadataURI = res.data.IpfsHash;
       const metadataURI = 'bafkreieif3uo2h4uhjpkhs45fr2qcbukwbmwqxe4jzqj7s2qnwtudbbd64';
       mintNFT(metadataURI);
