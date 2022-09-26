@@ -1,6 +1,6 @@
 import User from '../../models/User';
 import connectToMongoDB from '../../middleware/database';
-import bcrypt from 'bcryptjs'
+const CryptoJS = require('crypto-js');
 
 const handler = async (req, res) => {
 
@@ -11,8 +11,8 @@ const handler = async (req, res) => {
         if(user){
           return res.status(500).json({error: "Account already exists."});
         }
-        const salt = await bcrypt.genSalt(10);
-        const securedPassword = await bcrypt.hash(req.body.password, salt);
+
+        const securedPassword = CryptoJS.AES.encrypt(req.body.password, process.env.AES_SECRET).toString();
 
         user = new User({
             accountAddress: req.body.accountAddress,
