@@ -9,7 +9,7 @@ const handler = async (req, res) => {
       try {
         let user = await User.findOne({accountAddress: req.body.accountAddress});
         if(user){
-          return res.status(500).json({error: "Account already exists."});
+          return res.status(500).json({success: false, error: "Account already exists."});
         }
 
         const securedPassword = CryptoJS.AES.encrypt(req.body.password, process.env.AES_SECRET).toString();
@@ -20,10 +20,10 @@ const handler = async (req, res) => {
             password: securedPassword
         })
         await user.save();
-        res.status(200).json({user});
+        res.status(200).json({success: true, user});
 
       } catch (error) {
-        return res.status(500).send(error.message);
+        return res.status(500).json( {success: false, error: "Something Went Wrong!"});
       }  
 
 
