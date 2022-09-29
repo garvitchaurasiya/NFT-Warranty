@@ -3,6 +3,7 @@ import { Button, Form } from 'semantic-ui-react'
 import web3 from '../ethereum/web3'
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import {useRouter} from 'next/router';
 
 function Signup() {
 
@@ -13,6 +14,8 @@ function Signup() {
             password: ""
         }
     )
+    const router = useRouter();
+
     let accounts = [""];
     useEffect(() => {
 
@@ -55,6 +58,9 @@ function Signup() {
                 draggable: true,
                 progress: undefined,
             });
+
+            router.push('/');
+
         } else {
             toast.error(json.error, {
                 position: "top-left",
