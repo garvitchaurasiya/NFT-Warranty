@@ -1,24 +1,25 @@
 import '../styles/globals.css'
 import 'semantic-ui-css/semantic.min.css'
 import LoadingBar from 'react-top-loading-bar'
-import {useState, useEffect} from 'react';
-import {useRouter} from 'next/router';
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/router';
 
 function MyApp({ Component, pageProps }) {
   const [progress, setProgress] = useState();
+
   const router = useRouter();
 
   useEffect(() => {
-    
-    router.events.on('routeChangeStart', ()=>{
+
+    router.events.on('routeChangeStart', () => {
       setProgress(40);
     })
-    router.events.on('routeChangeComplete', ()=>{
+    router.events.on('routeChangeComplete', () => {
       setProgress(100);
     });
 
-  }, [])
-  
+  }, [router.pathname])
+
   return <>
     <LoadingBar
       color='#f11946'

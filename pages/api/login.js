@@ -21,7 +21,10 @@ const handler = async (req, res) => {
             return res.status(400).json({ success: false, error: "Invalid Credentials" });
         }
 
-        const token = jwt.sign({ accountAddress }, process.env.JWT_SECRET);
+        // user = await User.findOne({ accountAddress }).select('-password');
+        const { accountType} = user;
+
+        const token = jwt.sign({ user: {accountAddress, accountType} }, process.env.JWT_SECRET);
 
         res.setHeader('Set-Cookie', serialize('token', token, {
             path: '/',
@@ -32,8 +35,7 @@ const handler = async (req, res) => {
         res.json({ success: true, token });
 
     } catch (error) {
-        console.error(error.message);
-        res.status(500).json({ success: false, error: "Internal Server Error." });
+        res.status(500).json({ success: false, error: "Something Went Wrong!" });
     }
 }
 
