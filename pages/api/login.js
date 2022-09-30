@@ -23,7 +23,12 @@ const handler = async (req, res) => {
 
         const token = jwt.sign({ accountAddress }, process.env.JWT_SECRET);
 
-        res.setHeader('Set-Cookie', serialize('token', token, { path: '/' }));
+        res.setHeader('Set-Cookie', serialize('token', token, {
+            path: '/',
+            httpOnly: true,
+            maxAge: 60*60*24
+        }));
+        
         res.json({ success: true, token });
 
     } catch (error) {
