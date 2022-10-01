@@ -1,10 +1,21 @@
 import React, {useState} from 'react'
 import { Menu } from 'semantic-ui-react'
 import Router from 'next/router';
+import Home from './Home';
+import CreateWarranty from './CreateWarranty';
 
 function Navbar() {
     const [activate, setActivate] = useState("home");
-    const handleItemClick = (e, { name }) => setActivate(name);
+    const [state, setState] = useState({
+        home: true,
+        createWarranty: false,
+    })
+    
+    const handleHome = ()=>{
+        setActivate('home');
+        setState({home: true})
+    };
+
 
     const handleLogout = async()=>{
         await fetch(`${process.env.NEXT_PUBLIC_HOST}/api/logout`, {
@@ -16,6 +27,10 @@ function Navbar() {
 
         Router.push('/login');
     }
+    const createWarranty = ()=>{
+        setActivate('createWarranty');
+        setState({createWarranty: true})
+    }
 
     return (
         <div>
@@ -23,12 +38,12 @@ function Navbar() {
                 <Menu.Item
                     name='home'
                     active={activate === 'home'}
-                    onClick={handleItemClick}
+                    onClick={handleHome}
                 />
                 <Menu.Item
                     name='createWarranty'
                     active={activate === 'createWarranty'}
-                    onClick={handleItemClick}
+                    onClick={createWarranty}
                 />
                 <Menu.Menu position='right'>
                     <Menu.Item
@@ -38,7 +53,8 @@ function Navbar() {
                     />
                 </Menu.Menu>
             </Menu>
-            
+            { state.home && <Home/>}
+            { state.createWarranty && <CreateWarranty/>}
         </div>
     )
 }

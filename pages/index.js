@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
-import Retailer from '../components/retailer/Home';
-import Consumer from '../components/consumer/Home';
+import Retailer from '../components/retailer/RetailerNavbar';
+import Consumer from '../components/consumer/ConsumerNavbar';
 import { useRouter } from 'next/router';
 
 function Home(props) {
