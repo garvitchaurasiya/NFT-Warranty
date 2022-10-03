@@ -1,16 +1,61 @@
-import React, {useState, useEffect} from 'react'
-import { Card } from 'semantic-ui-react'
+import React, { useState, useEffect } from 'react'
+import { useRouter } from 'next/router';
+import 'semantic-ui-css/semantic.min.css'
+import warranty from '../../ethereum/warranty'
 
 function AllWarranties() {
 
-    // const [user, setUser] = useState({});
-    let user;
-    const [items, setItems] = useState([]);
-    let cards = [];
-    
-    useEffect(() => {
-        const getCards = async (accountAddress)=>{
-    
+    const Router = useRouter();
+
+    let allTokenIds = [];
+
+    async function getMetadata(tokenId) {
+        const uri = await warranty.methods.tokenURI(tokenId).call();
+
+        const response = await fetch(`${process.env.NEXT_PUBLIC_HOST}/api/getmetadata/${uri}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        })
+
+        const json = await response.json();
+
+        const a = document.createElement('a');
+        a.className = "ui card";
+        const content = document.createElement('div');
+        content.className = "content"
+
+        const header = document.createElement('div');
+        header.className = "header";
+        header.innerHTML = json.modal
+
+        const meta = document.createElement('div');
+        meta.className = "meta";
+        meta.innerHTML = '#'+tokenId+' '+json.serialNumber
+
+        const description = document.createElement('div');
+        description.className = "description";
+        description.innerHTML = json.warrantyExpiryDate
+
+        content.appendChild(header);
+        content.appendChild(meta);
+        content.appendChild(description);
+
+        a.appendChild(content);
+        document.querySelector('#cardsContainer').appendChild(a);
+
+    }
+
+    const mapCards = () => {
+        allTokenIds.map((ele, index) => {
+            getMetadata(ele);
+        })
+    }
+    const myPromise = new Promise((resolve, reject) => {
+
+        const getCards = async (accountAddress) => {
+
             const response = await fetch(`${process.env.NEXT_PUBLIC_HOST}/api/getwarranties`, {
                 method: 'POST',
                 headers: {
@@ -21,8 +66,9 @@ function AllWarranties() {
                 }),
             })
             const json = await response.json();
-            setItems(json.warranties);
-            console.log(json.warranties);
+            allTokenIds = json.warranties
+
+            resolve('finish', json.warranties);
 
         }
 
@@ -37,36 +83,30 @@ function AllWarranties() {
             const json = await response.json();
 
             if (json.success) {
-                // setUser(json.user);
                 getCards(json.user.accountAddress);
             }
             else {
-                router.push(`${process.env.NEXT_PUBLIC_HOST}/login`);
+                console.log("please login")
+                Router.push(`${process.env.NEXT_PUBLIC_HOST}/login`);
             }
         }
         getUser();
-        
+    });
 
-        console.log('useeffect')
+    
 
-    }, [])
+    useEffect(()=>{
+        myPromise.then((data) => {
+            mapCards();
+        });
+        console.log(Router.pathname);
+    }, [Router.pathname])
 
-    const mapCards = ()=>{
-        items.map((ele, index)=>{
-            cards.push({
-                header: 'Project Report - June',
-                description: 'Capitalise on low hanging fruit to identify a ballpark value added activity to beta test.',
-                meta: 'ROI: 27%',
-            });
-            console.log(ele);
-        })
-        return <Card.Group style={{ "width": "40%" }} items={cards} />
-    }
+    return (<>
+        <div id="cardsContainer">
 
-    return (
-        <div>
-            {mapCards()}
         </div>
+    </>
     )
 }
 

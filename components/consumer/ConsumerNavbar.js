@@ -12,14 +12,16 @@ function ConsumerNavbar() {
         warranties: false,
     })
 
-    const handleHome = ()=>{
+    const handleHome = () => {
         setActivate('home');
-        setState({home: true})
+        setState({ home: true })
+        console.log((state.warranties) ? 'block' : 'none');
     };
 
-    const getWarranties = ()=>{
+    const getWarranties = () => {
         setActivate('warranties');
-        setState({warranties: true})
+        setState({ warranties: true })
+        console.log((state.warranties) ? 'block' : 'none');
     }
 
     const handleLogout = async () => {
@@ -54,9 +56,12 @@ function ConsumerNavbar() {
                     />
                 </Menu.Menu>
             </Menu>
-            
-            { state.home && <Home/>}
-            { state.warranties && <AllWarranties/>}
+
+            {state.home && <Home />}
+
+            <div style={{ 'display': (state.warranties) ? 'block' : 'none' }} >
+                <AllWarranties />
+            </div>
 
         </div>
     )

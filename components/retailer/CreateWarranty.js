@@ -66,7 +66,7 @@ export default function CreateWarranty() {
       },
       body: JSON.stringify({
         tokenId: mint.events.Transfer.returnValues.tokenId,
-        accountAddress: user.accountAddress
+        accountAddress: state.accountAddress
       }),
     })
     const json = await response.json();
@@ -99,23 +99,23 @@ export default function CreateWarranty() {
       });
       console.log(data);
 
-      // var config = {
-      //   method: 'post',
-      //   url: 'https://api.pinata.cloud/pinning/pinJSONToIPFS',
-      //   headers: {
-      //     'Content-Type': 'application/json',
-      //     'pinata_api_key': '747fc320955426e6a8ba',
-      //     'pinata_secret_api_key': 'dcf02bf0d42c39bd7664383d8aecf7f276a70bf614ca057019c732bedc07d021'
-      //   },
+      var config = {
+        method: 'post',
+        url: 'https://api.pinata.cloud/pinning/pinJSONToIPFS',
+        headers: {
+          'Content-Type': 'application/json',
+          'pinata_api_key': '747fc320955426e6a8ba',
+          'pinata_secret_api_key': 'dcf02bf0d42c39bd7664383d8aecf7f276a70bf614ca057019c732bedc07d021'
+        },
 
-      //   data: data
-      // };
+        data: data
+      };
 
-      // const res = await axios(config);
-      // console.log(res.data);
+      const res = await axios(config);
+      console.log(res.data);
 
-      // const metadataURI = res.data.IpfsHash;
-      const metadataURI = 'bafkreieif3uo2h4uhjpkhs45fr2qcbukwbmwqxe4jzqj7s2qnwtudbbd64';
+      const metadataURI = res.data.IpfsHash;
+      // const metadataURI = 'bafkreieif3uo2h4uhjpkhs45fr2qcbukwbmwqxe4jzqj7s2qnwtudbbd64';
       mintNFT(metadataURI);
     } catch (error) {
       console.log(error.message);

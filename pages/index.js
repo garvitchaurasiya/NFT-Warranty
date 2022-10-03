@@ -27,8 +27,6 @@ function Home(props) {
         router.push(`${process.env.NEXT_PUBLIC_HOST}/login`);
       }
 
-      console.log("in _app.js")
-
     }
 
     getUser();
@@ -37,7 +35,9 @@ function Home(props) {
   return (
     <div>
       
-      { user.accountType==='Retailer' ? <Retailer/> : <Consumer/>}
+      {/* { user.accountType==='Retailer' ? <Retailer/> : <Consumer/>} */}
+      {user.accountType==='Retailer' && <Retailer/>}
+      {user.accountType==='Consumer' && <Consumer/>}
 
     </div>
   )

@@ -29,7 +29,7 @@ const handler = async (req, res) => {
         res.setHeader('Set-Cookie', serialize('token', token, {
             path: '/',
             httpOnly: true,
-            maxAge: 60*60*24
+            // maxAge: 60*60*24
         }));
         
         res.json({ success: true, token });
