@@ -1,7 +1,7 @@
-import React, { useState,useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button, Checkbox, Form } from 'semantic-ui-react'
 const axios = require('axios');
-import {useRouter} from 'next/router';
+import { useRouter } from 'next/router';
 import warranty from '../../ethereum/warranty'
 import web3 from '../../ethereum/web3';
 
@@ -33,7 +33,7 @@ export default function CreateWarranty() {
 
     getUser();
   }, [])
-  
+
 
   let currentdate = new Date().toISOString().slice(0, 10);
 
@@ -47,7 +47,6 @@ export default function CreateWarranty() {
 
   const onChange = (e) => {
     setState({ ...state, [e.target.name]: e.target.value })
-    console.log(state);
   }
 
 
@@ -56,8 +55,6 @@ export default function CreateWarranty() {
     const mint = await warranty.methods.safeMint(state.accountAddress, metadataURI).send({
       from: accounts[0]
     })
-    console.log("Success");
-    console.log(mint.events.Transfer.returnValues.tokenId);
 
     const response = await fetch(`${process.env.NEXT_PUBLIC_HOST}/api/addwarranty`, {
       method: 'POST',
@@ -70,7 +67,6 @@ export default function CreateWarranty() {
       }),
     })
     const json = await response.json();
-    console.log(json);
 
   }
 
@@ -97,7 +93,6 @@ export default function CreateWarranty() {
           "owner": state.accountAddress
         }
       });
-      console.log(data);
 
       var config = {
         method: 'post',
@@ -112,7 +107,6 @@ export default function CreateWarranty() {
       };
 
       const res = await axios(config);
-      console.log(res.data);
 
       const metadataURI = res.data.IpfsHash;
       // const metadataURI = 'bafkreieif3uo2h4uhjpkhs45fr2qcbukwbmwqxe4jzqj7s2qnwtudbbd64';

@@ -15,13 +15,11 @@ function ConsumerNavbar() {
     const handleHome = () => {
         setActivate('home');
         setState({ home: true })
-        console.log((state.warranties) ? 'block' : 'none');
     };
 
     const getWarranties = () => {
         setActivate('warranties');
         setState({ warranties: true })
-        console.log((state.warranties) ? 'block' : 'none');
     }
 
     const handleLogout = async () => {

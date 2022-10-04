@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { useRouter } from 'next/router';
 import 'semantic-ui-css/semantic.min.css'
 import warranty from '../../ethereum/warranty'
+import web3 from '../../ethereum/web3';
 
 function AllWarranties() {
 
@@ -10,6 +11,7 @@ function AllWarranties() {
     let allTokenIds = [];
 
     async function getMetadata(tokenId) {
+        const accounts = await web3.eth.getAccounts();
         const uri = await warranty.methods.tokenURI(tokenId).call();
 
         const response = await fetch(`${process.env.NEXT_PUBLIC_HOST}/api/getmetadata/${uri}`, {
@@ -20,6 +22,11 @@ function AllWarranties() {
         })
 
         const json = await response.json();
+
+        const today = new Date().toISOString().slice(0, 10)
+        if(today > json.warrantyExpiryDate){
+            return;
+        }
 
         const a = document.createElement('a');
         a.className = "ui card";
@@ -32,7 +39,7 @@ function AllWarranties() {
 
         const meta = document.createElement('div');
         meta.className = "meta";
-        meta.innerHTML = '#'+tokenId+' '+json.serialNumber
+        meta.innerHTML = '#' + tokenId + ' ' + json.serialNumber
 
         const description = document.createElement('div');
         description.className = "description";
@@ -68,7 +75,7 @@ function AllWarranties() {
             const json = await response.json();
             allTokenIds = json.warranties
 
-            resolve('finish', json.warranties);
+            resolve(json.warranties);
 
         }
 
@@ -93,13 +100,12 @@ function AllWarranties() {
         getUser();
     });
 
-    
 
-    useEffect(()=>{
+
+    useEffect(() => {
         myPromise.then((data) => {
             mapCards();
         });
-        console.log(Router.pathname);
     }, [Router.pathname])
 
     return (<>
