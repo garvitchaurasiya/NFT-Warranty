@@ -24,9 +24,9 @@ function AllWarranties() {
         const json = await response.json();
 
         const today = new Date().toISOString().slice(0, 10)
-        if(today > json.warrantyExpiryDate){
-            return;
-        }
+        // if(today > json.warrantyExpiryDate){
+        //     return;
+        // }
 
         const a = document.createElement('a');
         a.className = "ui card";

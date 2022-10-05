@@ -3,6 +3,7 @@ import { Menu } from 'semantic-ui-react'
 import Router from 'next/router';
 import Home from './Home';
 import AllWarranties from './AllWarranties'
+import TransferOwnership from './TransferOwnership'
 
 function ConsumerNavbar() {
     const [activate, setActivate] = useState("home");
@@ -10,6 +11,7 @@ function ConsumerNavbar() {
     const [state, setState] = useState({
         home: true,
         warranties: false,
+        transferOwnership: false
     })
 
     const handleHome = () => {
@@ -20,6 +22,11 @@ function ConsumerNavbar() {
     const getWarranties = () => {
         setActivate('warranties');
         setState({ warranties: true })
+    }
+
+    const transferOwnership = () => {
+        setActivate('transferOwnership');
+        setState({ transferOwnership: true })
     }
 
     const handleLogout = async () => {
@@ -45,6 +52,11 @@ function ConsumerNavbar() {
                     active={activate === 'warranties'}
                     onClick={getWarranties}
                 />
+                <Menu.Item
+                    name='transferOwnership'
+                    active={activate === 'transferOwnership'}
+                    onClick={transferOwnership}
+                />
 
                 <Menu.Menu position='right'>
                     <Menu.Item
@@ -60,6 +72,8 @@ function ConsumerNavbar() {
             <div style={{ 'display': (state.warranties) ? 'block' : 'none' }} >
                 <AllWarranties />
             </div>
+
+            {state.transferOwnership && <TransferOwnership/>}
 
         </div>
     )
