@@ -4,11 +4,15 @@ const axios = require('axios');
 import { useRouter } from 'next/router';
 import warranty from '../../ethereum/warranty'
 import web3 from '../../ethereum/web3';
+import { Dimmer, Loader } from 'semantic-ui-react'
 
 export default function CreateWarranty() {
 
   const [user, setUser] = useState({});
-
+  const [loading, setLoading] = useState({
+    state: false,
+    message: ""
+})
   const router = useRouter();
 
   useEffect(() => {
@@ -41,7 +45,7 @@ export default function CreateWarranty() {
     purchasedDate: currentdate,
     expiryDate: currentdate,
     serialNumber: "",
-    modal: "",
+    model: "",
     accountAddress: ""
   });
 
@@ -51,10 +55,15 @@ export default function CreateWarranty() {
 
 
   const mintNFT = async (metadataURI) => {
+
+    setLoading({state: true, message: "Waiting for transaction to complete."});
+
     const accounts = await web3.eth.getAccounts();
     const mint = await warranty.methods.safeMint(state.accountAddress, metadataURI).send({
       from: accounts[0]
     })
+
+    setLoading({state: true, message: "Processing"});
 
     const response = await fetch(`${process.env.NEXT_PUBLIC_HOST}/api/addwarranty`, {
       method: 'POST',
@@ -67,6 +76,9 @@ export default function CreateWarranty() {
       }),
     })
     const json = await response.json();
+    console.log(json);
+    
+    setLoading({state: false});
 
   }
 
@@ -74,6 +86,8 @@ export default function CreateWarranty() {
   const createWarranty = async (event) => {
     event.preventDefault();
     try {
+      setLoading({state: true, message: "Processing"});
+
       var data = JSON.stringify({
         "pinataOptions": {
           "cidVersion": 1
@@ -86,7 +100,7 @@ export default function CreateWarranty() {
           }
         },
         "pinataContent": {
-          "modal": state.modal,
+          "model": state.model,
           "serialNumber": state.serialNumber,
           "purchasedDate": state.purchasedDate,
           "warrantyExpiryDate": state.expiryDate,
@@ -111,7 +125,9 @@ export default function CreateWarranty() {
       const metadataURI = res.data.IpfsHash;
       // const metadataURI = 'bafkreieif3uo2h4uhjpkhs45fr2qcbukwbmwqxe4jzqj7s2qnwtudbbd64';
       mintNFT(metadataURI);
+
     } catch (error) {
+      setLoading({state: false});
       console.log(error.message);
     }
   }
@@ -119,6 +135,11 @@ export default function CreateWarranty() {
 
   return (
     <div className="container">
+
+      <Dimmer active={loading.state} inverted>
+        <Loader>{loading.message}</Loader>
+      </Dimmer>
+
       <Form onSubmit={createWarranty}>
         <Form.Field>
           <Form.Field>
@@ -126,8 +147,8 @@ export default function CreateWarranty() {
             <input type="text" name="accountAddress" value={state.accountAddress} onChange={onChange} required placeholder='Address' />
           </Form.Field>
           <Form.Field>
-            <label>Modal</label>
-            <input type="text" name="modal" value={state.modal} onChange={onChange} required />
+            <label>Model</label>
+            <input type="text" name="model" value={state.model} onChange={onChange} required />
           </Form.Field>
           <Form.Field>
             <label>Serial Number</label>
@@ -141,13 +162,9 @@ export default function CreateWarranty() {
           <input type="date" name="expiryDate" value={state.expiryDate} onChange={onChange} />
         </Form.Field>
 
-        <Form.Field>
-          <Checkbox label='I agree to the Terms and Conditions' />
-        </Form.Field>
-        <Button type='submit'>Submit</Button>
+        <Button type='submit'>Create</Button>
       </Form>
-
-
+      
     </div>
   )
 }

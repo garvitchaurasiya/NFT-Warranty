@@ -4,7 +4,8 @@ import ConsumerNavbar from './ConsumerNavbar'
 function Home() {
   return (
     <div>
-        this is home
+      this is home
+      
     </div>
   )
 }

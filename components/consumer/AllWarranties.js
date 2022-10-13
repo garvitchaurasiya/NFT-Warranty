@@ -35,7 +35,7 @@ function AllWarranties() {
 
         const header = document.createElement('div');
         header.className = "header";
-        header.innerHTML = json.modal
+        header.innerHTML = json.model
 
         const meta = document.createElement('div');
         meta.className = "meta";

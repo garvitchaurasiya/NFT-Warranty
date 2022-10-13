@@ -4,11 +4,16 @@ const axios = require('axios');
 import { useRouter } from 'next/router';
 import warranty from '../../ethereum/warranty'
 import web3 from '../../ethereum/web3';
-import { stringifyQuery } from 'next/dist/server/server-route-utils';
+import { Dimmer, Loader } from 'semantic-ui-react'
+
 
 function TransferOwnership() {
 
     const [user, setUser] = useState({});
+    const [loading, setLoading] = useState({
+        state: false,
+        message: ""
+    })
 
     const router = useRouter();
 
@@ -36,7 +41,7 @@ function TransferOwnership() {
             const json = await response.json();
 
             if (json.success) {
-                setState({...state, accountAddress: json.user.accountAddress});
+                setState({ ...state, accountAddress: json.user.accountAddress });
             }
             else {
                 router.push(`${process.env.NEXT_PUBLIC_HOST}/login`);
@@ -47,13 +52,17 @@ function TransferOwnership() {
         getUser();
     }, [])
 
-    const transfer = async()=>{
+    const transfer = async () => {
         try {
-            console.log('inside');
+            
+            setLoading({state: true, message: "Waiting for transaction to complete."});
+            
             const accounts = await web3.eth.getAccounts();
-            await warranty.methods.safeTransferFrom(state.accountAddress, state.sendTo, state.id).send({from: accounts[0]});
-            // console.log('2');
-            // // Remove from previous owner
+            await warranty.methods.safeTransferFrom(state.accountAddress, state.sendTo, state.id).send({ from: accounts[0] });
+
+            // Remove from previous owner
+
+            setLoading({state: true, message: "Processing"});
 
             const response = await fetch(`${process.env.NEXT_PUBLIC_HOST}/api/updatewarranties`, {
                 method: 'POST',
@@ -67,11 +76,11 @@ function TransferOwnership() {
                 })
             })
             const json = await response.json();
-            console.log('3');
-
             console.log(json);
+            setLoading({state: false});
 
         } catch (error) {
+            setLoading({state: false});
             console.log("Some error occured", error.message);
         }
 
@@ -80,6 +89,11 @@ function TransferOwnership() {
 
     return (
         <div className="container">
+
+            <Dimmer active={loading.state} inverted>
+                <Loader>{loading.message}</Loader>
+            </Dimmer>
+
             <Form onSubmit={transfer}>
                 <Form.Field>
                     <Form.Field>
@@ -92,7 +106,7 @@ function TransferOwnership() {
                     </Form.Field>
                     <Form.Field>
                         <label>ID</label>
-                        <input type="number" name="id" value={state.id} onChange={onChange} required placeholder='#id'/>
+                        <input type="number" name="id" value={state.id} onChange={onChange} required placeholder='#id' />
                     </Form.Field>
                 </Form.Field>
 
