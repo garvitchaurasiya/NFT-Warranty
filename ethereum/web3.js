@@ -12,7 +12,7 @@ if (typeof window !== "undefined" && typeof window.ethereum !== "undefined") {
     // In this case We're going to set up our own provider that connects to the rinkbey test network through Infura.
 
     const provider = new Web3.providers.HttpProvider(
-        "https://rinkeby.infura.io/v3/212a17f42b494d30b3cb8b53e8e5761c"
+        "https://goerli.infura.io/v3/575dd94850a143c7aaebe197e1031a35"
     );
     web3 = new Web3(provider);
 }
