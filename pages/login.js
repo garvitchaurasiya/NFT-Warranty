@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react'
-import { Button, Form } from 'semantic-ui-react'
+import { Button, Form, Icon } from 'semantic-ui-react'
 import web3 from '../ethereum/web3'
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import {useRouter} from 'next/router';
+import { useRouter } from 'next/router';
+import Link from 'next/link';
 
-function Signup() {
+function Login() {
 
     const [state, setState] = useState(
         {
@@ -17,14 +18,16 @@ function Signup() {
     const router = useRouter();
 
     let accounts = [""];
+    
+    const getAccountAddress = async () => {
+        accounts = await web3.eth.getAccounts();
+        setState({
+            ...state, accountAddress: accounts[0]
+        });
+    }
+
     useEffect(() => {
 
-        const getAccountAddress = async () => {
-            accounts = await web3.eth.getAccounts();
-            setState({
-                ...state, accountAddress: accounts[0]
-            });
-        }
         getAccountAddress();
 
     }, [])
@@ -76,22 +79,28 @@ function Signup() {
     }
     return (
         <div className="container">
-            
+
             <ToastContainer />
-            
+
             <Form onSubmit={onSubmit}>
                 <Form.Field>
-                    <label htmlFor='accountAddress'>Account Address</label>
+                    <label htmlFor='accountAddress'>Account Address <Icon style={{"cursor":"pointer"}} onClick={getAccountAddress} name='refresh' /></label>
                     <input onChange={onChange} name="accountAddress" value={state.accountAddress} type="text" disabled />
                 </Form.Field>
                 <Form.Field>
                     <label>Password</label>
                     <input onChange={onChange} name="password" value={state.password} type="password" placeholder='Password' />
                 </Form.Field>
+                <Form.Field>
+                    <Link href="/signup">
+                        Don't have an account?
+                    </Link>
+                </Form.Field>
+
                 <Button type='submit'>Submit</Button>
             </Form>
         </div>
     )
 }
 
-export default Signup
+export default Login
