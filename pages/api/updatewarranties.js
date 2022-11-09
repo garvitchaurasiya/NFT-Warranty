@@ -1,4 +1,4 @@
-import User from '../../models/User';
+import Account from '../../models/Account';
 import connectToMongoDB from '../../middleware/database';
 
 const handler = async (req, res) => {
@@ -10,7 +10,7 @@ const handler = async (req, res) => {
         const {accountAddress, sendTo, tokenId} = req.body;
         toString(tokenId);
 
-        const user = await User.findOne({accountAddress});
+        const user = await Account.findOne({accountAddress});
         console.log(user);
 
         let warranties = user.warranties;
@@ -24,10 +24,10 @@ const handler = async (req, res) => {
         console.log('next', warranties);
 
         
-        await User.findOneAndUpdate({accountAddress}, {warranties});
+        await Account.findOneAndUpdate({accountAddress}, {warranties});
         // console.log(user);
 
-        await User.findOneAndUpdate({accountAddress: sendTo}, { "$push": { "warranties": tokenId } })
+        await Account.findOneAndUpdate({accountAddress: sendTo}, { "$push": { "warranties": tokenId } })
 
         res.status(200).json({success: true});
 

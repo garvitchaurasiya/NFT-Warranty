@@ -1,5 +1,5 @@
 import connectToMongoDB from '../../middleware/database';
-import User from '../../models/User'
+import Account from '../../models/Account'
 
 const handler = async (req, res) => {
 
@@ -8,7 +8,7 @@ const handler = async (req, res) => {
       try {
 
         const {accountAddress, tokenId} = req.body;
-        await User.findOneAndUpdate({accountAddress}, { "$push": { "warranties": tokenId } })
+        await Account.findOneAndUpdate({accountAddress}, { "$push": { "warranties": tokenId } })
 
         res.status(200).json({success: true});
 

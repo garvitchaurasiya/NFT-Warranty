@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 // const connectToMongoDB = require('../../middleware/database'); not working when using require. why?
 import connectToMongoDB from "../../middleware/database";
-import User from '../../models/User';
+import Account from '../../models/Account';
 const CryptoJS = require('crypto-js');
 const jwt = require('jsonwebtoken');
 import { serialize } from 'cookie';
@@ -9,7 +9,7 @@ import { serialize } from 'cookie';
 const handler = async (req, res) => {
     try {
         const { accountAddress, password } = req.body;
-        let user = await User.findOne({ accountAddress });
+        let user = await Account.findOne({ accountAddress });
         if (!user) {
             return res.status(400).json({ success: false, error: "Account doesn't exists. Please try to Sign Up!" });
         }
@@ -21,7 +21,7 @@ const handler = async (req, res) => {
             return res.status(400).json({ success: false, error: "Invalid Credentials" });
         }
 
-        // user = await User.findOne({ accountAddress }).select('-password');
+        // user = await Account.findOne({ accountAddress }).select('-password');
         const { accountType} = user;
 
         const token = jwt.sign({ user: {accountAddress, accountType} }, process.env.JWT_SECRET);

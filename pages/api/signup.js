@@ -1,4 +1,4 @@
-import User from '../../models/User';
+import Account from '../../models/Account';
 import connectToMongoDB from '../../middleware/database';
 const CryptoJS = require('crypto-js');
 
@@ -7,14 +7,14 @@ const handler = async (req, res) => {
     if (req.method === 'POST') {
 
       try {
-        let user = await User.findOne({accountAddress: req.body.accountAddress});
+        let user = await Account.findOne({accountAddress: req.body.accountAddress});
         if(user){
           return res.status(500).json({success: false, error: "Account already exists."});
         }
 
         const securedPassword = CryptoJS.AES.encrypt(req.body.password, process.env.AES_SECRET).toString();
 
-        user = new User({
+        user = new Account({
             accountAddress: req.body.accountAddress,
             accountType: req.body.accountType,
             password: securedPassword

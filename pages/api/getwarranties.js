@@ -1,5 +1,5 @@
 import connectToMongoDB from '../../middleware/database';
-import User from '../../models/User'
+import Account from '../../models/Account'
 
 const handler = async (req, res) => {
 
@@ -7,7 +7,7 @@ const handler = async (req, res) => {
 
         try {
             const { accountAddress } = req.body;
-            const user = await User.findOne({ accountAddress })
+            const user = await Account.findOne({ accountAddress })
 
             res.status(200).json({ success: true, warranties: user.warranties });
 
