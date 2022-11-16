@@ -93,7 +93,7 @@ function Login() {
                 </Form.Field>
                 <Form.Field>
                     <Link href="/signup">
-                        Don't have an account?
+                        Don&#39;t have an account?
                     </Link>
                 </Form.Field>
 
