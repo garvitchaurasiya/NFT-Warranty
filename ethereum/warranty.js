@@ -5,7 +5,7 @@ import CompiledWarranty from './build/Warranty.json';
 
 const instance = new web3.eth.Contract( // This is our contract instance which refers to a particular address.
 	CompiledWarranty.abi,
-    '0x878AB9BC17DAf32d3Ed1dF701e9Bda4BaeCf2c25'
+    '0x29f2aD2F6136b8796FA2668d03D5C0Ab7fd2aF7e'
 );
 
 export default instance;
