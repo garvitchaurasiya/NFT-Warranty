@@ -1,5 +1,3 @@
-import mongoose from 'mongoose';
-// const connectToMongoDB = require('../../middleware/database'); not working when using require. why?
 import connectToMongoDB from "../../middleware/database";
 import Account from '../../models/Account';
 const CryptoJS = require('crypto-js');

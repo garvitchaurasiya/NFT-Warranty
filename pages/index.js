@@ -34,8 +34,8 @@ function Home(props) {
 
   return (
     <div>
-      
       {/* { user.accountType==='Retailer' ? <Retailer/> : <Consumer/>} */}
+      {/* <img src={'https://api.time.com/wp-content/uploads/2021/03/nft-art-1.jpg'}/> */}
       {user.accountType==='Retailer' && <Retailer/>}
       {user.accountType==='Consumer' && <Consumer/>}
 

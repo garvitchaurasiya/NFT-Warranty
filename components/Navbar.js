@@ -1,13 +1,8 @@
 import React, { useState } from 'react';
 import Router from 'next/router';
-import CreateWarranty from './CreateWarranty';
 
 function Navbar() {
-  const [activate, setActivate] = useState('createWarranty');
-  const [state, setState] = useState({
-    createWarranty: true,
-    about: false
-  });
+  const [activate, setActivate] = useState('');
 
   const handleLogout = async () => {
     await fetch(`${process.env.NEXT_PUBLIC_HOST}/api/logout`, {
@@ -20,9 +15,8 @@ function Navbar() {
     Router.push('/login');
   };
 
-  const createWarranty = () => {
-    setActivate('createWarranty');
-    setState({ createWarranty: true });
+  const about = () => {
+    setActivate('about');
   };
 
   return (
@@ -34,20 +28,17 @@ function Navbar() {
             <div className='flex'>
               <button
                 className={`menu-item ${
-                  activate === 'createWarranty' ? '' : 'font-bold text-gray-400'
+                  activate === 'nft-warranty' ? '' : 'font-bold text-gray-400'
                 } px-3 py-2 text-sm font-medium`}
-                onClick={createWarranty}
+                onClick={()=>{setActivate('nft-warranty')}}
               >
-                Create Warranty
+                NFT-Warranty
               </button>
               <button
                 className={`menu-item ${
                   activate === 'about' ? '' : 'font-bold text-gray-400'
                 } px-3 py-2 text-sm font-medium`}
-                onClick={()=>{
-                  setActivate('about');
-                  // setState({ about: true });
-                }}
+                onClick={about}
               >
                 About
               </button>
@@ -57,16 +48,12 @@ function Navbar() {
                 className="text-gray-400 px-3 py-2 text-sm font-medium"
                 onClick={handleLogout}
               >
-                Logout
+                Login / Signup
               </button>
             </div>
           </div>
         </div>
       </nav>
-
-
-
-      {state.createWarranty && <CreateWarranty />}
     </div>
   );
 }

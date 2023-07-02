@@ -1,82 +1,87 @@
-import React, { useState } from 'react'
-import { Menu } from 'semantic-ui-react'
+import React, { useState } from 'react';
 import Router from 'next/router';
-import Home from './Home';
-import AllWarranties from './AllWarranties'
-import TransferOwnership from './TransferOwnership'
+import AllWarranties from './AllWarranties';
+import TransferOwnership from './TransferOwnership';
 
 function ConsumerNavbar() {
-    const [activate, setActivate] = useState("home");
+  const [activate, setActivate] = useState('warranties');
 
-    const [state, setState] = useState({
-        home: true,
-        warranties: false,
-        transferOwnership: false
-    })
+  const [state, setState] = useState({
+    warranties: true,
+    transferOwnership: false,
+    about: false
+  });
 
-    const handleHome = () => {
-        setActivate('home');
-        setState({ home: true })
-    };
+  const getWarranties = () => {
+    setActivate('warranties');
+    setState({ warranties: true });
+  };
 
-    const getWarranties = () => {
-        setActivate('warranties');
-        setState({ warranties: true })
-    }
+  const transferOwnership = () => {
+    setActivate('transferOwnership');
+    setState({ transferOwnership: true });
+  };
 
-    const transferOwnership = () => {
-        setActivate('transferOwnership');
-        setState({ transferOwnership: true })
-    }
+  const handleLogout = async () => {
+    await fetch(`${process.env.NEXT_PUBLIC_HOST}/api/logout`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    Router.push('/login');
+  };
 
-    const handleLogout = async () => {
-        await fetch(`${process.env.NEXT_PUBLIC_HOST}/api/logout`, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-        })
-        Router.push('/login');
-    }
-
-    return (
-        <div>
-            <Menu pointing secondary>
-                <Menu.Item
-                    name='home'
-                    active={activate === 'home'}
-                    onClick={handleHome}
-                />
-                <Menu.Item
-                    name='warranties'
-                    active={activate === 'warranties'}
-                    onClick={getWarranties}
-                />
-                <Menu.Item
-                    name='transferOwnership'
-                    active={activate === 'transferOwnership'}
-                    onClick={transferOwnership}
-                />
-
-                <Menu.Menu position='right'>
-                    <Menu.Item
-                        name='logout'
-                        active={activate === 'logout'}
-                        onClick={handleLogout}
-                    />
-                </Menu.Menu>
-            </Menu>
-
-            {state.home && <Home />}
-
-            <div style={{ 'display': (state.warranties) ? 'block' : 'none' }} >
-                <AllWarranties />
+  return (
+    <div>
+      <nav className="bg-black text-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between h-16">
+            <div className="flex">
+              <button
+                className={`${activate === 'warranties' ? '' : 'font-bold text-gray-400'
+                  } px-3 py-2 text-sm font-medium`}
+                onClick={getWarranties}
+              >
+                Warranties
+              </button>
+              <button
+                className={`${activate === 'transferOwnership' ? '' : 'font-bold text-gray-400'
+                  } px-3 py-2 text-sm font-medium`}
+                onClick={transferOwnership}
+              >
+                Transfer Ownership
+              </button>
+              <button
+                className={`${activate === 'about' ? '' : 'font-bold text-gray-400'
+                  } px-3 py-2 text-sm font-medium`}
+                onClick={() => {
+                  setActivate('about');
+                  // setState({ about: true });
+                }}
+              >
+                About
+              </button>
             </div>
-
-            {state.transferOwnership && <TransferOwnership/>}
-
+            <div className="flex items-center">
+              <button
+                className="text-gray-400 px-3 py-2 text-sm font-medium"
+                onClick={handleLogout}
+              >
+                Logout
+              </button>
+            </div>
+          </div>
         </div>
-    )
+      </nav>
+
+      <div className={state.warranties ? 'block' : 'hidden'}>
+        <AllWarranties />
+      </div>
+
+      {state.transferOwnership && <TransferOwnership />}
+    </div>
+  );
 }
 
-export default ConsumerNavbar
+export default ConsumerNavbar;

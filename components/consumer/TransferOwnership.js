@@ -1,121 +1,133 @@
 import React, { useState, useEffect } from 'react';
-import { Button, Checkbox, Form } from 'semantic-ui-react'
-const axios = require('axios');
+import axios from 'axios';
 import { useRouter } from 'next/router';
-import warranty from '../../ethereum/warranty'
+import warranty from '../../ethereum/warranty';
 import web3 from '../../ethereum/web3';
-import { Dimmer, Loader } from 'semantic-ui-react'
-
+import Loader from '../Loader';
 
 function TransferOwnership() {
+  const [user, setUser] = useState({});
+  const [loading, setLoading] = useState(false);
 
-    const [user, setUser] = useState({});
-    const [loading, setLoading] = useState({
-        state: false,
-        message: ""
-    })
+  const router = useRouter();
 
-    const router = useRouter();
+  let currentdate = new Date().toISOString().slice(0, 10);
 
-    let currentdate = new Date().toISOString().slice(0, 10);
+  const [state, setState] = useState({
+    accountAddress: '',
+    sendTo: '',
+    id: '',
+  });
 
-    const [state, setState] = useState({
-        accountAddress: "",
-        sendTo: "",
-        id: ""
-    });
+  const onChange = (e) => {
+    setState({ ...state, [e.target.name]: e.target.value });
+  };
 
-    const onChange = (e) => {
-        setState({ ...state, [e.target.name]: e.target.value })
+  useEffect(() => {
+    async function getUser() {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_HOST}/api/getuser`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      const json = await response.json();
+
+      if (json.success) {
+        setState({ ...state, accountAddress: json.user.accountAddress });
+      } else {
+        router.push(`${process.env.NEXT_PUBLIC_HOST}/login`);
+      }
     }
 
-    useEffect(() => {
-        async function getUser() {
-            const response = await fetch(`${process.env.NEXT_PUBLIC_HOST}/api/getuser`, {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-            })
+    getUser();
+  }, []);
 
-            const json = await response.json();
+  const transfer = async (e) => {
+    e.preventDefault();
 
-            if (json.success) {
-                setState({ ...state, accountAddress: json.user.accountAddress });
-            }
-            else {
-                router.push(`${process.env.NEXT_PUBLIC_HOST}/login`);
-            }
+    try {
+      setLoading(true);
 
-        }
+      const accounts = await web3.eth.getAccounts();
+      await warranty.methods.safeTransferFrom(state.accountAddress, state.sendTo, state.id).send({ from: accounts[0] });
 
-        getUser();
-    }, [])
+      // Remove from previous owner
 
-    const transfer = async () => {
-        try {
-            
-            setLoading({state: true, message: "Waiting for transaction to complete."});
-            
-            const accounts = await web3.eth.getAccounts();
-            await warranty.methods.safeTransferFrom(state.accountAddress, state.sendTo, state.id).send({ from: accounts[0] });
+      setLoading(false);
 
-            // Remove from previous owner
-
-            setLoading({state: true, message: "Processing"});
-
-            const response = await fetch(`${process.env.NEXT_PUBLIC_HOST}/api/updatewarranties`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    accountAddress: state.accountAddress,
-                    sendTo: state.sendTo,
-                    tokenId: state.id
-                })
-            })
-            const json = await response.json();
-            console.log(json);
-            setLoading({state: false});
-
-        } catch (error) {
-            setLoading({state: false});
-            console.log("Some error occured", error.message);
-        }
-
+      const response = await fetch(`${process.env.NEXT_PUBLIC_HOST}/api/updatewarranties`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          accountAddress: state.accountAddress,
+          sendTo: state.sendTo,
+          tokenId: state.id,
+        }),
+      });
+      const json = await response.json();
+      console.log(json);
+    } catch (error) {
+      setLoading(false);
+      console.log('Some error occurred', error.message);
     }
+  };
 
+  return (
+    <div className="mt-8">
+      {loading && <Loader message="Transfering Ownership..."/>}
 
-    return (
-        <div className="container">
-
-            <Dimmer active={loading.state} inverted>
-                <Loader>{loading.message}</Loader>
-            </Dimmer>
-
-            <Form onSubmit={transfer}>
-                <Form.Field>
-                    <Form.Field>
-                        <label htmlFor='accountAddress'>Account Address</label>
-                        <input onChange={onChange} name="accountAddress" value={state.accountAddress} type="text" disabled />
-                    </Form.Field>
-                    <Form.Field>
-                        <label>Tranfer Ownership To</label>
-                        <input type="text" name="sendTo" value={state.sendTo} onChange={onChange} required placeholder='Address' />
-                    </Form.Field>
-                    <Form.Field>
-                        <label>ID</label>
-                        <input type="number" name="id" value={state.id} onChange={onChange} required placeholder='#id' />
-                    </Form.Field>
-                </Form.Field>
-
-                <Button type='submit'>Transfer</Button>
-            </Form>
-
-
+      <form onSubmit={transfer} className="max-w-md mx-auto p-16 rounded-xl" style={{'backgroundColor':'rgb(233 32 99 / 80%)'}}>
+        <div className="mb-4">
+          <label htmlFor="accountAddress" className="block mb-2 font-bold">Account Address</label>
+          <input
+            onChange={onChange}
+            name="accountAddress"
+            value={state.accountAddress}
+            type="text"
+            disabled
+            className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-100 cursor-not-allowed"
+          />
         </div>
-    )
+        <div className="mb-4">
+          <label className="block mb-2 font-bold">Transfer Ownership To</label>
+          <input
+            type="text"
+            name="sendTo"
+            value={state.sendTo}
+            onChange={onChange}
+            required
+            placeholder="Address"
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500"
+          />
+        </div>
+        <div className="mb-4">
+          <label className="block mb-2 font-bold">ID</label>
+          <input
+            type="number"
+            name="id"
+            value={state.id}
+            onChange={onChange}
+            required
+            placeholder="#id"
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500"
+          />
+        </div>
+        <div className="text-center">
+          <button
+            type="submit"
+            className="w-full px-4 py-2 font-bold text-white bg-black rounded hover:bg-gray-900"
+          >
+            Transfer
+          </button>
+        </div>
+      </form>
+
+    </div>
+  );
 }
 
-export default TransferOwnership
+export default TransferOwnership;

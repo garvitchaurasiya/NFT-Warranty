@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Button, Checkbox, Form } from 'semantic-ui-react'
 const axios = require('axios');
 import { useRouter } from 'next/router';
 import warranty from '../../ethereum/warranty'
 import web3 from '../../ethereum/web3';
-import { Dimmer, Loader } from 'semantic-ui-react'
+import Loader from '../Loader';
 
 export default function CreateWarranty() {
 
@@ -12,7 +11,7 @@ export default function CreateWarranty() {
   const [loading, setLoading] = useState({
     state: false,
     message: ""
-})
+  })
   const router = useRouter();
 
   useEffect(() => {
@@ -56,29 +55,36 @@ export default function CreateWarranty() {
 
   const mintNFT = async (metadataURI) => {
 
-    setLoading({state: true, message: "Waiting for transaction to complete."});
+    try {
+      setLoading({ state: true, message: "Waiting for transaction..." });
 
-    const accounts = await web3.eth.getAccounts();
-    const mint = await warranty.methods.safeMint(state.accountAddress, metadataURI).send({
-      from: accounts[0]
-    })
+      const accounts = await web3.eth.getAccounts();
+      const mint = await warranty.methods.safeMint(state.accountAddress, metadataURI).send({
+        from: accounts[0]
+      })
 
-    setLoading({state: true, message: "Processing"});
+      setLoading({ state: true, message: "Processing request..." });
 
-    const response = await fetch(`${process.env.NEXT_PUBLIC_HOST}/api/addwarranty`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        tokenId: mint.events.Transfer.returnValues.tokenId,
-        accountAddress: state.accountAddress
-      }),
-    })
-    const json = await response.json();
-    console.log(json);
-    
-    setLoading({state: false});
+      const response = await fetch(`${process.env.NEXT_PUBLIC_HOST}/api/addwarranty`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          tokenId: mint.events.Transfer.returnValues.tokenId,
+          accountAddress: state.accountAddress
+        }),
+      })
+      const json = await response.json();
+      console.log(json);
+
+      setLoading({ state: false });
+    } catch (error) {
+      setLoading({ state: false });
+      console.log(error.message);
+    }
+
+
 
   }
 
@@ -86,7 +92,7 @@ export default function CreateWarranty() {
   const createWarranty = async (event) => {
     event.preventDefault();
     try {
-      setLoading({state: true, message: "Processing"});
+      setLoading({ state: true, message: "Processing" });
 
       var data = JSON.stringify({
         "pinataOptions": {
@@ -127,44 +133,81 @@ export default function CreateWarranty() {
       mintNFT(metadataURI);
 
     } catch (error) {
-      setLoading({state: false});
+      setLoading({ state: false });
       console.log(error.message);
     }
   }
 
 
   return (
-    <div className="container">
+    <div>
+      {loading.state && <Loader message={loading.message} />}
+      <form onSubmit={createWarranty} className="max-w-lg mx-auto p-8 rounded-xl mt-2" style={{ 'background-color': 'rgb(233 32 99 / 85%)' }}>
+        <div className="mb-4">
+          <label className="block mb-2 font-bold">Customer Account Address</label>
+          <input
+            type="text"
+            name="accountAddress"
+            value={state.accountAddress}
+            onChange={onChange}
+            required
+            placeholder="Address"
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500"
+          />
+        </div>
+        <div className="mb-4">
+          <label className="block mb-2 font-bold">Model</label>
+          <input
+            type="text"
+            name="model"
+            value={state.model}
+            onChange={onChange}
+            required
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500"
+          />
+        </div>
+        <div className="mb-4">
+          <label className="block mb-2 font-bold">Serial Number</label>
+          <input
+            type="text"
+            name="serialNumber"
+            value={state.serialNumber}
+            onChange={onChange}
+            required
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500"
+          />
+        </div>
+        <div className="mb-4">
+          <label className="block mb-2 font-bold">Purchased Date</label>
+          <input
+            type="date"
+            name="purchasedDate"
+            value={state.purchasedDate}
+            disabled
+            onChange={onChange}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-100 cursor-not-allowed"
+          />
+        </div>
+        <div className="mb-4">
+          <label className="block mb-2 font-bold">Expiry Date</label>
+          <input
+            type="date"
+            name="expiryDate"
+            value={state.expiryDate}
+            onChange={onChange}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500"
+          />
+        </div>
+        <div className="">
+          <button
+            type="submit"
+            className=" w-full px-4 py-2 font-bold text-white bg-black rounded hover:bg-indigo-500"
+          >
+            Create
+          </button>
+        </div>
+      </form>
 
-      <Dimmer active={loading.state} inverted>
-        <Loader>{loading.message}</Loader>
-      </Dimmer>
-
-      <Form onSubmit={createWarranty}>
-        <Form.Field>
-          <Form.Field>
-            <label>Customer Account Address</label>
-            <input type="text" name="accountAddress" value={state.accountAddress} onChange={onChange} required placeholder='Address' />
-          </Form.Field>
-          <Form.Field>
-            <label>Model</label>
-            <input type="text" name="model" value={state.model} onChange={onChange} required />
-          </Form.Field>
-          <Form.Field>
-            <label>Serial Number</label>
-            <input type="text" name="serialNumber" value={state.serialNumber} onChange={onChange} required />
-          </Form.Field>
-          <label>Purchased Date</label>
-          <input type="date" name="purchasedDate" value={state.purchasedDate} disabled onChange={onChange} />
-        </Form.Field>
-        <Form.Field>
-          <label>Expiry Date</label>
-          <input type="date" name="expiryDate" value={state.expiryDate} onChange={onChange} />
-        </Form.Field>
-
-        <Button type='submit'>Create</Button>
-      </Form>
-      
     </div>
   )
 }
