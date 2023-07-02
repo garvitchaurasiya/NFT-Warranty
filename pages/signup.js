@@ -146,7 +146,7 @@ function Signup() {
           </div>
           <div className="mb-4">
             <Link href="/login">
-              <a className="text-blue-500 hover:text-blue-700">
+              <a className="text-gray-800 hover:text-blue-700">
                 Already have an account?
               </a>
             </Link>

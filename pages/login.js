@@ -111,7 +111,7 @@ function Login() {
                     <div className="mb-4">
                         <Link href="/signup">
                             <a className="text-gray-800 hover:text-indigo-500">
-                                Don't have an account?
+                                Don&#39;t have an account?
                             </a>
                         </Link>
                     </div>
